@@ -1,6 +1,6 @@
-# Ollama (Docker) Guide
+# Ollama + Open WebUI (Docker) Guide
 
-This folder runs an Ollama server in Docker using Compose.
+This folder runs an Ollama server and Open WebUI in Docker using Compose.
 
 ## Model compatibility by GPU
 
@@ -47,16 +47,23 @@ Quick recommendations:
 
 ## What is running
 
-- Service name: `ollama`
-- Image: `ollama/ollama:latest`
-- Host port: `11000`
-- Container port: `11434`
-- API base URL from host: `http://localhost:11000`
-- Persistent model storage: named volume `ollama_data` mounted at `/root/.ollama`
+- Ollama service:
+  - Service name: `ollama`
+  - Image: `ollama/ollama:latest`
+  - Host port: `11000`
+  - Container port: `11434`
+  - API base URL from host: `http://localhost:11000`
+  - Persistent model storage: named volume `ollama_data` mounted at `/root/.ollama`
+- Open WebUI service:
+  - Service name: `open-webui`
+  - Image: `ghcr.io/open-webui/open-webui:main`
+  - Host URL: `http://localhost:3000`
+  - Container port: `8080`
+  - Persistent UI data volume: `open_webui_data`
 
 ## Start and stop the container
 
-Run from this folder (`models/`):
+Run from this folder (`containers/`):
 
 ```bash
 docker compose up -d
@@ -71,7 +78,7 @@ docker compose down
 See logs:
 
 ```bash
-docker compose logs -f ollama
+docker compose logs -f ollama open-webui
 ```
 
 ## How to connect
@@ -84,7 +91,17 @@ Check server and list models:
 curl http://localhost:11000/api/tags
 ```
 
-### 2) From inside the container using CLI
+### 2) From your browser using Open WebUI
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Open WebUI is preconfigured (via Compose env) to use Ollama at `http://ollama:11434` on the internal Docker network.
+
+### 3) From inside the container using CLI
 
 Open shell:
 
@@ -98,7 +115,7 @@ Then run Ollama commands, for example:
 ollama list
 ```
 
-### 3) Run one-off commands without opening shell
+### 4) Run one-off commands without opening shell
 
 ```bash
 docker compose exec ollama ollama list
@@ -179,6 +196,7 @@ Current setup is defined in `docker-compose.yml`:
 - `volumes`: keeps models in `ollama_data` so they survive restarts
 - `deploy.resources.reservations.devices`: requests NVIDIA GPU
 - `OLLAMA_HOST=0.0.0.0`: allows binding on all interfaces inside container
+- Open WebUI is exposed on host `3000` and linked to Ollama via `OLLAMA_BASE_URL=http://ollama:11434`
 
 ## Quick troubleshooting
 
