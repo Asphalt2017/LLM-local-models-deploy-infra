@@ -35,8 +35,20 @@ services:
     volumes:
       - open_webui_data:/app/backend/data
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:12500:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
 volumes:
   ollama_data:
     driver: local
   open_webui_data:
+    driver: local
+  portainer_data:
     driver: local
