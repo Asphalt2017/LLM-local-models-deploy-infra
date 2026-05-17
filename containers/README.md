@@ -57,9 +57,18 @@ Quick recommendations:
 - Open WebUI service:
   - Service name: `open-webui`
   - Image: `ghcr.io/open-webui/open-webui:main`
-  - Host URL: `http://localhost:3000`
+  - Host URL: `http://localhost:12000`
   - Container port: `8080`
+  - Purpose: Browser-based chat UI for interacting with Ollama models.
   - Persistent UI data volume: `open_webui_data`
+- SearXNG service:
+  - Service name: `searxng`
+  - Image: `searxng/searxng:latest`
+  - Host URL: `http://localhost:11500`
+  - Container port: `8080`
+  - Purpose: Self-hosted search engine used by Open WebUI for RAG web search. Replaces external API keys.
+  - Config mounted from: `./searxng/settings.yml`
+  - Secret key sourced from: `.env` via `SEARXNG_SECRET_KEY`
 - Portainer service:
   - Service name: `portainer`
   - Image: `portainer/portainer-ce:latest`
@@ -70,7 +79,7 @@ Quick recommendations:
   - Service name: `watchtower`
   - Image: `containrrr/watchtower:latest`
   - Purpose: Monitors running containers and automatically pulls and restarts them when a newer image is available.
-  - Schedule: runs daily at 04:00.
+  - Schedule: runs daily at 04:00 (configurable via `WATCHTOWER_SCHEDULE` in `.env`).
   - Cleanup: removes old images after updating.
   - No UI — runs silently in the background.
 
@@ -91,7 +100,7 @@ docker compose down
 See logs:
 
 ```bash
-docker compose logs -f ollama open-webui
+docker compose logs -f ollama open-webui searxng
 ```
 
 ## How to connect
@@ -109,10 +118,20 @@ curl http://localhost:11000/api/tags
 Open:
 
 ```text
-http://localhost:3000
+http://localhost:12000
 ```
 
 Open WebUI is preconfigured (via Compose env) to use Ollama at `http://ollama:11434` on the internal Docker network.
+
+### 3) Search via SearXNG
+
+Open:
+
+```text
+http://localhost:11500
+```
+
+SearXNG is used automatically by Open WebUI for RAG web search. You can also use it directly as a private search engine in your browser.
 
 ### 3) From inside the container using CLI
 
