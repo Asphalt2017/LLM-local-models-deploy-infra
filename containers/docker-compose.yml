@@ -35,6 +35,17 @@ services:
     volumes:
       - open_webui_data:/app/backend/data
 
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_API_VERSION=1.44
+      - WATCHTOWER_CLEANUP=${WATCHTOWER_CLEANUP}
+      - WATCHTOWER_SCHEDULE=${WATCHTOWER_SCHEDULE}
+
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer

@@ -60,6 +60,19 @@ Quick recommendations:
   - Host URL: `http://localhost:3000`
   - Container port: `8080`
   - Persistent UI data volume: `open_webui_data`
+- Portainer service:
+  - Service name: `portainer`
+  - Image: `portainer/portainer-ce:latest`
+  - Host URL: `http://localhost:12500`
+  - Purpose: Web UI to manage all containers, volumes, images, and logs without using the CLI.
+  - First launch: create an admin password within 5 minutes or the UI will lock for security.
+- Watchtower service:
+  - Service name: `watchtower`
+  - Image: `containrrr/watchtower:latest`
+  - Purpose: Monitors running containers and automatically pulls and restarts them when a newer image is available.
+  - Schedule: runs daily at 04:00.
+  - Cleanup: removes old images after updating.
+  - No UI — runs silently in the background.
 
 ## Start and stop the container
 
